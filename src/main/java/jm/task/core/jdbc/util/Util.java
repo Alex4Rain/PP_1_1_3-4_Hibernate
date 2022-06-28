@@ -13,6 +13,10 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class Util {
+    private static final String NAME_USER = "root";
+    private static final String PASSWORD = "Xtrfyjd1990";
+    private static final String URL = "jdbc:mysql://localhost:3306/mysql";
+    private static Connection connection;
     private static SessionFactory sessionFactory;
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
@@ -46,12 +50,6 @@ public class Util {
         }
         return sessionFactory;
     }
-
-
-    private static final String NAME_USER = "root";
-    private static final String PASSWORD = "Xtrfyjd1990";
-    private static final String URL = "jdbc:mysql://localhost:3306/mysql";
-    private static Connection connection;
 
     public static Connection getConnection() {
         if (connection == null) {
