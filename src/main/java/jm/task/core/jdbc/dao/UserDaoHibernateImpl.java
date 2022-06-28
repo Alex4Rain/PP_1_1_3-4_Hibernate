@@ -13,7 +13,6 @@ import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     private SessionFactory sessionFactory;
-    private Transaction transaction;
 
     public UserDaoHibernateImpl() {
         sessionFactory = Util.getSessionFactory();
@@ -22,14 +21,14 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void createUsersTable() {
         try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
+            session.getTransaction().begin();
             session.createNativeQuery("CREATE TABLE users (id bigint auto_increment primary key, name varchar(255) not null, lastName varchar(255) not null, age TINYINT not null)").executeUpdate();
-            transaction.commit();
+            session.getTransaction().commit();
         } catch (PersistenceException e) {
             System.out.println("Table with this name already exist");
         } catch (Exception e1) {
-            if (transaction.getStatus() == TransactionStatus.ACTIVE || transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK) {
-                transaction.rollback();
+            if (sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.ACTIVE || sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
             }
             e1.printStackTrace();
         }
@@ -38,14 +37,14 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void dropUsersTable() {
         try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
+            session.getTransaction().begin();
             session.createSQLQuery("DROP TABLE users").executeUpdate();
-            transaction.commit();
+            session.getTransaction().commit();
         } catch (PersistenceException e) {
             System.out.println("Table with this name don't exist");
         } catch (Exception e1) {
-            if (transaction.getStatus() == TransactionStatus.ACTIVE || transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK) {
-                transaction.rollback();
+            if (sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.ACTIVE || sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
             }
             e1.printStackTrace();
         }
@@ -55,12 +54,12 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
+            session.getTransaction().begin();
             session.save(new User(name, lastName, age));
-            transaction.commit();
+            session.getTransaction().commit();
         } catch (Exception e) {
-            if (transaction.getStatus() == TransactionStatus.ACTIVE || transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK) {
-                transaction.rollback();
+            if (sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.ACTIVE || sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
             }
             e.printStackTrace();
         }
@@ -77,17 +76,17 @@ public class UserDaoHibernateImpl implements UserDao {
                 }
             }
             if (user != null) {
-                transaction = session.beginTransaction();
+                session.getTransaction().begin();
                 session.delete(user);
-                transaction.commit();
+                session.getTransaction().commit();
                 System.out.println("User with ID = " + id + " was deleted");
             } else {
                 System.out.println("User with ID = " + id + " wasn't found in DB");
             }
 
         } catch (Exception e) {
-            if (transaction.getStatus() == TransactionStatus.ACTIVE || transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK) {
-                transaction.rollback();
+            if (sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.ACTIVE || sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
             }
             e.printStackTrace();
         }
@@ -104,12 +103,12 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void cleanUsersTable() {
         try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
+            session.getTransaction().begin();
             session.createQuery("DELETE FROM User").executeUpdate();
-            transaction.commit();
+            session.getTransaction().commit();
         } catch (Exception e) {
-            if (transaction.getStatus() == TransactionStatus.ACTIVE || transaction.getStatus() == TransactionStatus.MARKED_ROLLBACK) {
-                transaction.rollback();
+            if (sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.ACTIVE || sessionFactory.getCurrentSession().getTransaction().getStatus() == TransactionStatus.MARKED_ROLLBACK) {
+                sessionFactory.getCurrentSession().getTransaction().rollback();
             }
             e.printStackTrace();
         }
